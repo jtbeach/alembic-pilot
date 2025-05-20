@@ -1,0 +1,125 @@
+---
+description: Guidelines for typing in Python
+globs:
+alwaysApply: false
+---
+# Type Annotation Guidelines
+
+This document outlines our guidelines for type annotations in our Python codebase.
+
+## Core Principles
+
+1. All functions and methods must have complete type annotations
+2. Use Python 3.11+ typing features
+3. Type annotations are checked in CI via `uv run poe type_check`
+4. Prefer explicit types over `Any`
+5. Use type aliases for complex types
+
+## Guidelines
+
+### Required Type Annotations
+
+- All function parameters must be typed
+- All function return values must be typed
+- All class attributes must be typed
+- All variables that are not immediately obvious should be typed
+- Generic types should be properly constrained
+
+### Python 3.11+ Features to Use
+
+1. Use `|` for union types instead of `Union`
+2. Use `TypeAlias` for type aliases
+3. Use `Never` for functions that never return
+4. Use `Literal` for literal types
+5. Use `TypedDict` for dictionary types with specific keys
+6. Use `Protocol` for structural typing
+7. Use `Self` for methods that return their own type
+
+### What to Avoid
+
+1. Avoid using `Any` unless absolutely necessary
+2. Avoid using `# type: ignore` comments
+3. Avoid using `cast()` unless necessary
+4. Avoid using `TYPE_CHECKING` for simple imports
+
+## Examples
+
+### Good Examples
+
+```python
+from typing import TypeAlias, Protocol, Self
+
+# Type aliases for complex types
+DbUriCallable: TypeAlias = Callable[[], str]
+IncludeObjectCallable: TypeAlias = Callable[
+    [SchemaItem, str | None, str | None, bool, SchemaItem | None], bool
+]
+
+# Protocol for structural typing
+class DatabaseConnection(Protocol):
+    def connect(self) -> None: ...
+    def disconnect(self) -> None: ...
+    def is_connected(self) -> bool: ...
+
+class Database:
+    def __init__(self, uri: str) -> None:
+        self.uri = uri
+        self._connection: DatabaseConnection | None = None
+
+    def get_connection(self) -> DatabaseConnection:
+        if self._connection is None:
+            self._connection = self._create_connection()
+        return self._connection
+
+    def create_pool(self, min_size: int = 1, max_size: int = 10) -> Self:
+        """Creates a connection pool and returns self for chaining."""
+        self._pool = ConnectionPool(min_size, max_size)
+        return self
+```
+
+### Bad Examples
+
+```python
+# Missing return type
+def get_user(user_id):
+    return User.objects.get(id=user_id)
+
+# Using Any
+def process_data(data: Any) -> Any:
+    return data.process()
+
+# Using old Union syntax
+def get_value() -> Union[str, int]:
+    return "value"
+
+# Missing type for class attribute
+class User:
+    def __init__(self):
+        self.name = None  # Should be: self.name: str | None = None
+
+# Using type ignore
+def bad_function():  # type: ignore
+    pass
+```
+
+## Type Checking
+
+1. Run type checking locally:
+   ```bash
+   uv run poe type_check
+   ```
+
+2. Type checking is enforced in CI and must pass for PRs to be merged
+
+3. If you need to use `# type: ignore`, you must:
+   - Add a comment explaining why the ignore is necessary
+   - Consider if there's a better way to type the code
+   - Get approval from a maintainer
+
+## Rationale
+
+1. Type annotations help catch bugs early
+2. Type annotations serve as documentation
+3. Type annotations enable better IDE support
+4. Type annotations make refactoring safer
+5. Python 3.11+ features make types more readable and maintainable

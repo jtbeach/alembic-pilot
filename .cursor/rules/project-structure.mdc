@@ -1,0 +1,214 @@
+---
+description: Project structure
+globs:
+alwaysApply: false
+---
+# Project Structure Guidelines
+
+This document outlines our guidelines for project structure and organization.
+
+## Core Principles
+
+1. Use `src` layout for Python projects
+2. Keep tests in a separate `tests` directory
+3. Follow consistent module organization
+4. Maintain clear separation of concerns
+
+## Directory Structure
+
+```
+project_root/
+├── src/
+│   └── package_name/
+│       ├── __init__.py
+│       ├── module1.py
+│       └── module2.py
+│       └── testfixtures.py  # Reusable test fixtures that are exposed as part of public API
+├── tests/
+│   ├── test_module1.py # Shared test fixtures that are not part of public API for package
+│   ├── test_module1.py
+│   └── test_module2.py
+├── pyproject.toml
+└── README.md
+```
+
+### Key Points
+
+1. All application code lives in the `src` directory
+2. All test code lives in the `tests` directory
+3. No `__init__.py` files in the `tests` directory
+4. Test files mirror the structure of the source code
+5. Test files are named `test_*.py`
+
+## Module Organization
+
+### Source Code (`src/`)
+
+1. Package code is organized in modules under `src/package_name/`
+2. Each module should have a clear, single responsibility
+3. Use `__init__.py` files to expose public API
+4. Keep related functionality together
+5. Use subpackages for major feature separation
+
+Example:
+```
+src/
+└── alembic_pilot/
+    ├── __init__.py
+    ├── managed_db.py
+    ├── exceptions.py
+    └── import_utils.py
+```
+
+### Tests (`tests/`)
+
+1. Test files mirror the structure of the source code
+2. Test files are named `test_*.py`
+3. No `__init__.py` files in the tests directory
+4. Test files should be focused and test one module
+5. Use fixtures for common test setup
+
+Example:
+```
+tests/
+├── test_managed_db.py
+├── test_exceptions.py
+└── test_import_utils.py
+```
+
+## Best Practices
+
+1. Keep the `src` directory clean and organized
+2. Maintain a flat structure in the `tests` directory
+3. Use clear, descriptive names for modules and test files
+4. Keep related functionality together
+5. Use subpackages for major feature separation
+
+## Rationale
+
+1. `src` layout prevents import issues
+2. Separate test directory makes it clear what is test code
+3. No `__init__.py` in tests prevents accidental imports
+4. Consistent structure makes the codebase easier to navigate
+5. Clear organization helps maintain code quality
+
+## Common Mistakes
+
+### Bad Structure
+
+```
+project_root/
+├── package_name/
+│   ├── __init__.py
+│   ├── module1.py
+│   └── module2.py
+├── tests/
+│   ├── __init__.py  # Don't do this
+│   ├── test_module1.py
+│   └── test_module2.py
+└── setup.py
+```
+
+### Good Structure
+
+```
+project_root/
+├── src/
+│   └── package_name/
+│       ├── __init__.py
+│       ├── module1.py
+│       └── module2.py
+├── tests/
+│   ├── test_module1.py
+│   └── test_module2.py
+└── pyproject.toml
+```
+
+## API Exports and Imports
+
+### Public API Exports
+
+1. All public symbols that form the API should be exported from the top-level `__init__.py`
+2. Internal implementation details should not be exported
+3. Use `__all__` to explicitly define what is exported
+4. Keep the public API minimal and well-documented
+
+Example of a good `__init__.py`:
+```python
+"""Alembic Pilot - Database management and schema upgrade functionality.
+
+This package provides tools for managing database creation, ownership verification,
+and schema management operations.
+"""
+
+from .managed_db import ManagedDatabase
+from .exceptions import (
+    AppSchemaOwnershipError,
+    DatabaseOwnershipError,
+    RoleGrantError,
+    AlembicInitError,
+)
+
+__all__ = [
+    "ManagedDatabase",
+    "AppSchemaOwnershipError",
+    "DatabaseOwnershipError",
+    "RoleGrantError",
+    "AlembicInitError",
+]
+```
+
+### Internal Imports
+
+1. Internal code should use relative imports where possible
+2. Avoid using top-level imports for internal code to prevent circular dependencies
+3. Use absolute imports only when necessary
+4. Keep import paths as short as possible
+
+Examples:
+
+```python
+# Good - Using relative imports
+from .exceptions import AppSchemaOwnershipError
+from .import_utils import get_class_import_path
+
+# Bad - Using top-level imports for internal code
+from alembic_pilot.exceptions import AppSchemaOwnershipError
+from alembic_pilot.import_utils import get_class_import_path
+```
+
+### Import Best Practices
+
+1. Group imports in the following order:
+   - Standard library imports
+   - Third-party imports
+   - Local application imports
+2. Use absolute imports for standard library and third-party packages
+3. Use relative imports for local application imports
+4. Avoid circular dependencies by careful module organization
+5. Keep import statements at the top of the file
+
+Example:
+```python
+# Standard library imports
+import shutil
+from pathlib import Path
+from typing import TypeAlias
+
+# Third-party imports
+from mako.template import Template
+from psycopg import AsyncConnection
+from sqlalchemy.orm import DeclarativeBase
+
+# Local application imports
+from .exceptions import AppSchemaOwnershipError
+from .import_utils import get_class_import_path
+```
+## Rationale
+
+1. Clear public API makes the package easier to use
+2. Explicit exports prevent accidental exposure of internal details
+3. Relative imports help prevent circular dependencies
+4. Consistent import style makes code more maintainable
+5. Proper import organization improves code readability
+

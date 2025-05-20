@@ -1,0 +1,171 @@
+---
+description: Style guidelines for defining arguments in Python functions
+globs:
+alwaysApply: false
+---
+# Function Argument Style Guidelines
+
+This document outlines our guidelines for function argument style and usage.
+
+## Core Principles
+
+1. Make function calls clear and unambiguous
+2. Prevent accidental argument order mistakes
+3. Use type annotations for all arguments
+4. Consider human error in addition to type safety
+5. Balance convenience with safety
+
+## Argument Style Rules
+
+### Simple Functions (3 or fewer arguments)
+
+For simple functions with 3 or fewer arguments, positional arguments are acceptable:
+
+```python
+def get_user_by_id(user_id: int) -> User:
+    """Get a user by their ID."""
+    pass
+
+def create_user(name: str, email: str, age: int) -> User:
+    """Create a new user."""
+    pass
+```
+
+### Complex Functions (4 or more arguments)
+
+For functions with 4 or more arguments, use required keyword arguments:
+
+```python
+def create_database(
+    *,
+    host: str,
+    port: int,
+    username: str,
+    database: str,
+    password: str | None = None,
+    verbose: bool = False,
+) -> None:
+    """Create a new database."""
+    pass
+```
+
+### Same-Type Arguments
+
+When multiple arguments have the same type and could be confused, use required keyword arguments. Note that this is primarily for simple types like `str`, `int`, etc. Complex types that would be caught by the type checker don't need this protection:
+
+```python
+# Bad - Easy to mix up order of same-type arguments
+def create_rectangle(width: int, height: int, x: int, y: int) -> Rectangle:
+    pass
+
+# Good - Clear which value is which
+def create_rectangle(
+    *,
+    width: int,
+    height: int,
+    x: int,
+    y: int,
+) -> Rectangle:
+    pass
+
+# OK - Complex types are caught by type checker
+def verify_database_ownership(
+    conn: AsyncConnection[TupleRow],
+    db_owner_role: str,
+) -> None:
+    pass
+```
+
+## Examples
+
+### Good Examples
+
+```python
+# Simple function - positional args OK
+def get_user_by_id(user_id: int) -> User:
+    """Get a user by their ID."""
+    pass
+
+# Complex function - keyword args required
+def init_alembic(
+    *,
+    migrations_dir: Path,
+    declarative_base: type[DeclarativeBase],
+    models_module: ModuleType,
+    db_url_callable: DbUriCallable,
+    include_object_callable: IncludeObjectCallable | None = None,
+) -> None:
+    """Initialize Alembic configuration."""
+    pass
+
+# Same-type arguments - keyword args required
+def create_database(
+    *,
+    host: str,
+    port: int,
+    username: str,
+    database: str,
+    mgmt_database: str = "postgres",
+    app_schema_name: str = "public",
+    password: str | None = None,
+    verbose: bool = False,
+) -> None:
+    """Create a new database."""
+    pass
+```
+
+### Bad Examples
+
+```python
+# Too many positional args
+def create_database(
+    host: str,
+    port: int,
+    username: str,
+    database: str,
+    password: str | None = None,
+    verbose: bool = False,
+) -> None:
+    pass
+
+# Same-type args that could be confused
+def create_rectangle(width: int, height: int, x: int, y: int) -> Rectangle:
+    pass
+
+# Optional args mixed with required args
+def create_user(
+    name: str,
+    email: str,
+    age: int,
+    is_admin: bool = False,
+    is_active: bool = True,
+) -> User:
+    pass
+```
+
+## Best Practices
+
+1. Use required keyword arguments when:
+   - Function has 4 or more arguments
+   - Multiple arguments have the same simple type (str, int, etc.) that could be confused
+   - Argument order could be confused for simple types
+
+2. Use positional arguments when:
+   - Function has 3 or fewer arguments
+   - Arguments have distinct types
+   - Arguments are complex types that would be caught by the type checker
+   - Argument order is obvious
+
+3. Always use type annotations for all arguments
+
+4. Consider adding argument validation for complex types
+
+5. Document argument requirements in docstrings
+
+## Rationale
+
+1. Required keyword arguments make function calls more explicit
+2. Keyword arguments prevent accidental argument order mistakes for simple types
+3. Type annotations and type checkers prevent mistakes for complex types
+4. Clear argument style improves code readability
+5. Consistent style makes the codebase more maintainable

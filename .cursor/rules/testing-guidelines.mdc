@@ -1,0 +1,183 @@
+---
+description: Guidelines for testing in Python
+globs:
+alwaysApply: false
+---
+# Testing Guidelines
+
+This document outlines our guidelines for writing and organizing tests.
+
+## Core Principles
+
+1. Write integration tests that use real database connections
+2. Use fixtures for test setup and teardown
+3. Keep tests focused and isolated
+4. Follow consistent test organization
+5. Use descriptive test names
+
+## Test Organization
+
+### Fixtures
+
+1. Shared fixtures should be defined in `conftest.py`
+2. Test-specific fixtures should be defined in the test file
+3. Use fixtures from dependent projects when available
+4. Keep fixtures focused and reusable
+
+Example of `conftest.py`:
+```python
+"""Shared test fixtures."""
+
+import pytest
+from psycopg_toolbox.testfixtures import db_connection
+
+# Import fixtures from dependent projects
+pytest_plugins = ["psycopg_toolbox.testfixtures"]
+
+# Shared fixtures
+@pytest.fixture
+def test_database():
+    """Create a test database for the test."""
+    # Implementation
+    yield db
+    # Cleanup
+```
+
+Example of test-specific fixture:
+```python
+"""Tests for managed database functionality."""
+
+import pytest
+from psycopg_toolbox.testfixtures import db_connection
+
+@pytest.fixture
+def test_schema():
+    """Create a test schema for this specific test."""
+    # Implementation
+    yield schema
+    # Cleanup
+
+def test_create_database(test_database, test_schema):
+    """Test database creation."""
+    # Test implementation
+```
+
+## Database Testing
+
+1. Use real database connections for tests
+2. Use fixtures from `psycopg_toolbox.testfixtures`
+3. Clean up after tests
+4. Use transactions to isolate tests
+5. Don't mock database functionality
+
+Example:
+```python
+"""Tests for database management."""
+
+import pytest
+from psycopg_toolbox.testfixtures import db_connection
+
+def test_database_creation(db_connection):
+    """Test that we can create a new database."""
+    # Test implementation using real database connection
+    async with db_connection as conn:
+        # Test code
+        pass
+```
+## Test Structure
+
+1. Test files should mirror the structure of the source code
+2. Test files should be named `test_*.py` where `*` matches the source file name
+   - For example, `src/alembic_pilot/managed_db.py` should have tests in `tests/test_managed_db.py`
+   - This makes it easy to find tests for a specific source file
+3. Test functions should be named `test_*`
+4. Use descriptive test names that explain what is being tested
+5. Group related tests in classes if they share setup
+
+Example:
+```
+src/
+└── alembic_pilot/
+    ├── managed_db.py
+    ├── exceptions.py
+    └── import_utils.py
+
+tests/
+├── test_managed_db.py    # Tests for managed_db.py
+├── test_exceptions.py    # Tests for exceptions.py
+└── test_import_utils.py  # Tests for import_utils.py
+```
+
+Example test file:
+```python
+"""Tests for managed database functionality."""
+
+import pytest
+from psycopg_toolbox.testfixtures import db_connection
+
+class TestDatabaseCreation:
+    """Tests for database creation functionality."""
+
+    def test_create_new_database(self, db_connection):
+        """Test creating a new database."""
+        # Test implementation
+
+    def test_create_existing_database(self, db_connection):
+        """Test creating a database that already exists."""
+        # Test implementation
+```
+
+## Running Tests
+
+To run all tests:
+```bash
+uv run poe test
+```
+
+To run specific tests:
+```bash
+# Run a specific test file
+uv run poe test tests/test_managed_db.py
+
+# Run a specific test
+uv run poe test tests/test_managed_db.py::TestDatabaseCreation::test_create_new_database
+
+# Run tests matching a pattern
+uv run poe test -k "test_create"
+```
+
+## Best Practices
+
+1. Write tests that are:
+   - Fast
+   - Isolated
+   - Repeatable
+   - Self-validating
+   - Timely
+
+2. Test organization:
+   - One test file per module
+   - Clear test names
+   - Group related tests
+   - Use appropriate fixtures
+
+3. Database testing:
+   - Use real connections
+   - Clean up after tests
+   - Use transactions
+   - Don't mock database
+
+4. Fixture usage:
+   - Share common fixtures
+   - Keep test-specific fixtures local
+   - Use dependent project fixtures
+   - Keep fixtures focused
+
+## Rationale
+
+1. Integration tests with real databases catch real issues
+2. Shared fixtures reduce code duplication
+3. Clear test organization makes maintenance easier
+4. Descriptive test names serve as documentation
+5. Proper test isolation prevents test interference
+

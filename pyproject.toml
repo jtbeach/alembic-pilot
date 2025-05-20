@@ -1,0 +1,106 @@
+[project]
+name = "alembic-pilot"
+version = "0.1.0"
+description = "A powerful database migration management tool built on top of Alembic, supporting AWS, Azure, Google Cloud, and Heroku PostgreSQL deployments"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Joel Beach", email = "12853460+jtbeach@users.noreply.github.com" }
+]
+dependencies = [
+    "alembic>=1.15.2",
+    "psycopg>=3.2.9",
+    "psycopg-toolbox~=0.1.0",
+    "sqlalchemy[asyncio,postgresql-psycopg]>=2.0.41",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["database", "migrations", "alembic", "postgresql", "sqlalchemy", "aws", "azure", "gcp", "heroku"]
+
+[project.urls]
+Homepage = "https://github.com/jtbeach/alembic-pilot"
+Documentation = "https://github.com/jtbeach/alembic-pilot#readme"
+Repository = "https://github.com/jtbeach/alembic-pilot.git"
+Issues = "https://github.com/jtbeach/alembic-pilot/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/alembic_pilot"]
+
+[tool.hatch.build.targets.sdist]
+packages = ["src/alembic_pilot"]
+
+[dependency-groups]
+dev = [
+    "bandit>=1.8.3",
+    "mypy>=1.15.0",
+    "poethepoet>=0.34.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-cov>=6.1.1",
+    "pytest-timeout>=2.4.0",
+    "pytest-xdist>=3.6.1",
+    "ruff>=0.11.10",
+]
+
+[tool.bandit]
+skips = ["B101"]
+
+[tool.coverage.run]
+disable_warnings = ["no-data-collected", "module-not-measured", "couldnt-parse"]
+
+[tool.mypy]
+plugins = []
+python_version = "3.11"
+warn_redundant_casts = true
+warn_unused_ignores = true
+check_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.poe.tasks]
+# Define your aliases here
+all = ["lint", "test"]
+bandit_check = "bandit -c pyproject.toml -r src/alembic_pilot"
+_format = "ruff format"
+debug_test = "pytest -vv --pdb --capture=no"
+fix = "ruff check --fix"
+format = ["sort_imports", "_format"]
+format_check = "ruff format --check"
+lint_check = "ruff check"
+lint = ["format_check", "lint_check", "type_check", "bandit_check"]
+sort_imports = "ruff check --select I --fix"
+test = "pytest"
+type_check = "mypy --show-error-codes -p alembic_pilot -p tests"
+
+[tool.pytest.ini_options]
+addopts = "-vv -n auto --cov=alembic_pilot --cov-report=term-missing"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_mode = "auto"
+log_cli_level = "CRITICAL"
+log_cli = "true"
+log_level = "DEBUG"
+timeout = 60
+
+[tool.ruff.format]
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint]
+select = ["A", "B", "C901", "D1", "E", "F", "FA", "LOG", "N", "T10", "T20", "UP", "W"]
+ignore = ["E111", "E114", "E117", "E266", "E501", "F821", "W191"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-third-party = []
+no-lines-before = ["local-folder"]
+

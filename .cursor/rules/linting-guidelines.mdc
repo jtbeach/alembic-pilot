@@ -1,0 +1,196 @@
+---
+description: Linting guidelines for Python files
+globs:
+alwaysApply: false
+---
+# Code Linting Guidelines
+
+This document outlines our guidelines for code linting in our Python codebase.
+
+## Core Principles
+
+1. All code must pass all linting checks
+2. We use multiple linters for different aspects of code quality
+3. Linting is enforced in CI
+4. Linting rules are defined in `pyproject.toml`
+
+## Linting Tools
+
+We use several linting tools:
+
+1. `ruff` - Fast Python linter for style, complexity, and common errors
+2. `bandit` - Security linter
+3. `mypy` - Static type checker
+
+## Linting Commands
+
+### Run All Linters
+
+To run all linting checks (including type checking):
+
+```bash
+uv run poe lint
+```
+
+This will run all linting checks in sequence:
+- ruff checks
+- bandit security checks
+- mypy type checks
+
+### Individual Linting Tasks
+
+To run specific linting checks:
+
+```bash
+# Run ruff checks
+uv run poe ruff_check
+
+# Run bandit security checks
+uv run poe bandit_check
+
+# Run mypy type checks
+uv run poe type_check
+```
+
+### Auto-fix Linting Issues
+
+Some linting issues can be automatically fixed, but only those detected by ruff:
+
+```bash
+# Fix ruff issues that can be auto-fixed
+uv run poe fix
+```
+
+Note that auto-fixing is only available for ruff issues. Issues detected by bandit or mypy must be fixed manually.
+
+## When to Lint
+
+1. After making any code changes
+2. Before committing changes
+3. After merging changes from other branches
+4. Before creating a PR
+
+## Common Linting Issues
+
+### Ruff Issues
+
+1. Unused imports
+2. Line length violations
+3. Missing docstrings
+4. Unused variables
+5. Style violations
+
+### Bandit Issues
+
+1. Hardcoded passwords
+2. Insecure function calls
+3. SQL injection risks
+4. Shell injection risks
+5. Insecure deserialization
+
+### MyPy Issues
+
+1. Missing type annotations
+2. Type mismatches
+3. Incorrect generic usage
+4. Incompatible types
+5. Unreachable code
+
+## Examples
+
+### Good Code (Passes All Linters)
+
+```python
+from typing import TypeAlias
+
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.schema import SchemaItem
+
+from .exceptions import (
+    AppSchemaOwnershipError,
+    DatabaseOwnershipError,
+    RoleGrantError,
+    AlembicInitError,
+)
+
+
+# Type definitions for callables
+DbUriCallable: TypeAlias = Callable[[], str]
+IncludeObjectCallable: TypeAlias = Callable[
+    [SchemaItem, str | None, str | None, bool, SchemaItem | None],
+    bool,
+]
+
+
+class ManagedDatabase:
+    """Manages database connections and schema migrations."""
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        username: str,
+        database: str,
+        alembic_ini_path: Path,
+        mgmt_database: str = "postgres",
+        app_schema_name: str = "public",
+        password: str | None = None,
+        verbose: bool = False,
+    ) -> None:
+        """Initialize a ManagedDatabase instance."""
+        self.host = host
+        self.port = port
+        self.username = username
+        self.password = password
+        self.database = database
+        self.mgmt_database = mgmt_database
+        self.app_schema_name = app_schema_name
+        self.alembic_ini_path = alembic_ini_path
+        self.lock_name = f"alembic-pilot-{database}"
+        self.verbose = verbose
+```
+
+### Bad Code (Fails Linters)
+
+```python
+# Fails ruff: unused import
+from typing import Any, TypeAlias
+
+# Fails ruff: line too long
+from sqlalchemy.orm import DeclarativeBase; from sqlalchemy.schema import SchemaItem
+
+# Fails ruff: missing docstring
+class ManagedDatabase:
+    def __init__(self, host, port, username, database, alembic_ini_path, mgmt_database="postgres", app_schema_name="public", password=None, verbose=False):
+        # Fails mypy: missing type annotations
+        self.host = host
+        self.port = port
+        self.username = username
+        # Fails bandit: hardcoded password
+        self.password = "secret123"
+        self.database = database
+        self.mgmt_database = mgmt_database
+        self.app_schema_name = app_schema_name
+        self.alembic_ini_path = alembic_ini_path
+        self.lock_name = f"alembic-pilot-{database}"
+        self.verbose = verbose
+```
+
+## Best Practices
+
+1. Run `uv run poe lint` after making any code changes
+2. Run `uv run poe fix` to automatically fix ruff issues
+3. Address all linting errors before committing
+4. Don't disable linting rules without good reason
+5. If you need to disable a linting rule:
+   - Add a comment explaining why
+   - Consider if there's a better way to write the code
+   - Get approval from a maintainer
+
+## Rationale
+
+1. Linting helps catch bugs early
+2. Linting enforces consistent code style
+3. Linting improves code security
+4. Linting makes code reviews easier
+5. Linting helps maintain code quality

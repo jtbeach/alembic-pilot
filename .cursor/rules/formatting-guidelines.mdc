@@ -1,0 +1,156 @@
+---
+description: How to format Python files
+globs:
+alwaysApply: false
+---
+# Code Formatting Guidelines
+
+This document outlines our guidelines for code formatting in our Python codebase.
+
+## Core Principles
+
+1. All code must be formatted according to our style guide
+2. We use `ruff` as our formatter
+3. Formatting is enforced in CI
+4. Formatting rules are defined in `pyproject.toml`
+
+## Formatting Commands
+
+### Format Code
+
+To format your code according to our style guide:
+
+```bash
+uv run poe format
+```
+
+This will automatically format all Python files in the project.
+
+### Check Formatting
+
+To check if your code is properly formatted without making changes:
+
+```bash
+uv run poe format_check
+```
+
+This is useful for:
+- CI pipelines
+- Pre-commit hooks
+- Verifying formatting before committing
+
+## When to Format
+
+1. After making any code changes
+2. Before committing changes
+3. After merging changes from other branches
+4. Before creating a PR
+
+## Formatting Rules
+
+Our formatting rules are defined in `pyproject.toml`. Key rules include:
+
+1. Maximum line length: 100 characters
+2. Use double quotes for strings
+3. Use 4 spaces for indentation
+4. Use trailing commas in multi-line structures
+5. Sort imports automatically
+6. Use consistent line endings
+
+## Examples
+
+### Good Formatting
+
+```python
+from typing import TypeAlias
+
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.schema import SchemaItem
+
+from .exceptions import (
+    AppSchemaOwnershipError,
+    DatabaseOwnershipError,
+    RoleGrantError,
+    AlembicInitError,
+)
+
+
+# Type definitions for callables
+DbUriCallable: TypeAlias = Callable[[], str]
+IncludeObjectCallable: TypeAlias = Callable[
+    [SchemaItem, str | None, str | None, bool, SchemaItem | None],
+    bool,
+]
+
+
+class ManagedDatabase:
+    """Manages database connections and schema migrations."""
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        username: str,
+        database: str,
+        alembic_ini_path: Path,
+        mgmt_database: str = "postgres",
+        app_schema_name: str = "public",
+        password: str | None = None,
+        verbose: bool = False,
+    ) -> None:
+        """Initialize a ManagedDatabase instance."""
+        self.host = host
+        self.port = port
+        self.username = username
+        self.password = password
+        self.database = database
+        self.mgmt_database = mgmt_database
+        self.app_schema_name = app_schema_name
+        self.alembic_ini_path = alembic_ini_path
+        self.lock_name = f"alembic-pilot-{database}"
+        self.verbose = verbose
+```
+
+### Bad Formatting
+
+```python
+from typing import TypeAlias
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.schema import SchemaItem
+from .exceptions import AppSchemaOwnershipError, DatabaseOwnershipError, RoleGrantError, AlembicInitError
+
+# Type definitions for callables
+DbUriCallable: TypeAlias = Callable[[], str]
+IncludeObjectCallable: TypeAlias = Callable[[SchemaItem, str | None, str | None, bool, SchemaItem | None], bool]
+
+class ManagedDatabase:
+    """Manages database connections and schema migrations."""
+    def __init__(self, host: str, port: int, username: str, database: str, alembic_ini_path: Path, mgmt_database: str = "postgres", app_schema_name: str = "public", password: str | None = None, verbose: bool = False) -> None:
+        """Initialize a ManagedDatabase instance."""
+        self.host = host
+        self.port = port
+        self.username = username
+        self.password = password
+        self.database = database
+        self.mgmt_database = mgmt_database
+        self.app_schema_name = app_schema_name
+        self.alembic_ini_path = alembic_ini_path
+        self.lock_name = f"alembic-pilot-{database}"
+        self.verbose = verbose
+```
+
+## Rationale
+
+1. Consistent formatting makes code more readable
+2. Automated formatting saves time and prevents arguments
+3. Formatting rules help maintain code quality
+4. Automated formatting reduces cognitive load
+5. Consistent formatting makes code reviews easier
+
+## Best Practices
+
+1. Run `uv run poe format` after making any code changes
+2. Run `uv run poe format_check` before committing
+3. Configure your editor to use our formatting rules
+4. Don't manually format code - let the tools do it
+5. If you need to override a formatting rule, document why in a comment

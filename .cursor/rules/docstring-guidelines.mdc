@@ -1,0 +1,108 @@
+---
+description: Conventions for docstrings in Python files
+globs:
+alwaysApply: false
+---
+---
+description: How to add or edit Cursor rules in our project
+globs: **/*.py
+alwaysApply: true
+---
+# Docstring Guidelines
+
+This document outlines our guidelines for writing docstrings in our Python codebase.
+
+## Core Principles
+
+1. All public functions, classes, and modules must have docstrings
+2. Docstrings should focus on behavior and purpose, not types
+3. Type information should be handled by type annotations
+4. Docstrings should be written in Google style format
+
+## Guidelines
+
+### Required Docstrings
+
+- All public modules must have a module-level docstring
+- All public classes must have a class-level docstring
+- All public functions and methods must have a docstring
+- Private functions/methods (starting with `_`) are exempt
+
+### What to Include in Docstrings
+
+1. A clear, concise description of what the function/class/module does
+2. Any important notes about behavior or side effects
+3. Examples when the behavior is complex or non-obvious
+4. References to related functions/classes when relevant
+
+### What to Exclude from Docstrings
+
+1. Type information (use type annotations instead)
+2. Parameter descriptions that just repeat the type
+3. Return value descriptions that just repeat the type
+
+## Examples
+
+### Good Examples
+
+```python
+def get_user_by_id(user_id: int) -> User:
+    """Retrieves a user from the database by their ID.
+
+    This function will raise UserNotFoundError if no user exists with the given ID.
+    The user's permissions are not loaded by default - use get_user_with_permissions()
+    if you need that information.
+
+    Args:
+        user_id: The unique identifier of the user to retrieve
+
+    Returns:
+        The User object if found
+
+    Raises:
+        UserNotFoundError: If no user exists with the given ID
+    """
+    pass
+
+class DatabaseConnection:
+    """Manages a connection to the database with automatic reconnection.
+
+    This class handles connection pooling and will automatically attempt to
+    reconnect if the connection is lost. It implements the context manager
+    protocol for safe resource management.
+    """
+    pass
+```
+
+### Bad Examples
+
+```python
+def get_user_by_id(user_id: int) -> User:
+    """Gets a user by their ID.
+
+    Args:
+        user_id: An integer representing the user's ID
+
+    Returns:
+        A User object representing the found user
+    """
+    pass
+
+class DatabaseConnection:
+    """A class that represents a database connection.
+
+    Attributes:
+        host: The hostname of the database server
+        port: The port number of the database server
+        username: The username to connect with
+        password: The password to connect with
+    """
+    pass
+```
+
+## Rationale
+
+1. Type annotations provide better IDE support and static type checking
+2. Duplicating type information in docstrings leads to maintenance issues
+3. Docstrings should focus on behavior and purpose, which type annotations cannot express
+4. Google style docstrings are widely used and well-supported by documentation tools
