@@ -18,7 +18,7 @@ wheels = [
 
 [[package]]
 name = "alembic-pilot"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
@@ -44,7 +44,7 @@ dev = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.15.2" },
     { name = "psycopg", specifier = ">=3.2.9" },
-    { name = "psycopg-toolbox", specifier = "~=0.1.0" },
+    { name = "psycopg-toolbox", specifier = ">=0.1.2" },
     { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.0.41" },
 ]
 
@@ -389,14 +389,14 @@ wheels = [
 
 [[package]]
 name = "psycopg-toolbox"
-version = "0.1.0"
+version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "psycopg" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/b5/4c1a38fcab357152f6b5d8de8865be29240eae41d562770b1a9f12f6c4ae/psycopg_toolbox-0.1.0.tar.gz", hash = "sha256:e0dab2ce0158047b48a8492c84cb8a55766af1e287650a5ed5e0e668e742672f", size = 42403, upload-time = "2025-05-20T00:45:07.481Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/86/e1/6274cb2b72cb734e557e0dd55c39f2fc5ca190bd3251b1d3079f83986c36/psycopg_toolbox-0.1.2.tar.gz", hash = "sha256:653e347ae234a724f94e204a001a5bbe76bd4eb220db08fbcf977cf0b280da81", size = 9695, upload-time = "2025-05-29T06:44:52.349Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1a/7a/49c7deb881f0ddce85c6b977a9261a2b1efa6fbb42c37ecb8962d65bc2bf/psycopg_toolbox-0.1.0-py3-none-any.whl", hash = "sha256:fe4cb4eac604c467ec84bd82aaf7fabbd3a2a9b6baff6a2a7491010e6fb37a2e", size = 11643, upload-time = "2025-05-20T00:45:05.642Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/aa/10cf721778e14e1477236ac52b695d794e4158c1084eaf79922aab540e67/psycopg_toolbox-0.1.2-py3-none-any.whl", hash = "sha256:2ddc3469ff43449f8b1d31b578aeee178aa1b661a9bca90735fd3bc4eee28cc2", size = 12031, upload-time = "2025-05-29T06:44:51.281Z" },
 ]
 
 [[package]]

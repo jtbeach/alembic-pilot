@@ -1,6 +1,6 @@
 [project]
 name = "alembic-pilot"
-version = "0.1.0"
+version = "0.1.1"
 description = "A powerful database migration management tool built on top of Alembic, supporting AWS, Azure, Google Cloud, and Heroku PostgreSQL deployments"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -11,7 +11,7 @@ authors = [
 dependencies = [
     "alembic>=1.15.2",
     "psycopg>=3.2.9",
-    "psycopg-toolbox~=0.1.0",
+    "psycopg-toolbox>=0.1.2",
     "sqlalchemy[asyncio,postgresql-psycopg]>=2.0.41",
 ]
 classifiers = [
@@ -34,9 +34,6 @@ Issues = "https://github.com/jtbeach/alembic-pilot/issues"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/alembic_pilot"]
 
 [tool.hatch.build.targets.sdist]
 packages = ["src/alembic_pilot"]
