@@ -3,6 +3,7 @@
 These tests use live database interactions through psycopg_toolbox.testfixtures.
 """
 
+from collections.abc import AsyncGenerator
 from pathlib import Path
 
 import pytest
@@ -61,11 +62,14 @@ async def db_url(
 
 
 @pytest.fixture
-def managed_db(
-    tmp_path: Path, db_url: URL, declarative_base: type[DeclarativeBase]
-) -> ManagedDatabase:
+async def managed_db(
+    tmp_path: Path,
+    db_url: URL,
+    declarative_base: type[DeclarativeBase],
+    psycopg_toolbox_empty_db: AsyncConnection[TupleRow],
+) -> AsyncGenerator[ManagedDatabase, None]:
     """Create a ManagedDatabase instance for testing."""
-    return ManagedDatabase(
+    yield ManagedDatabase(
         db_url=db_url.render_as_string(),
         declarative_base=declarative_base,
         models_module=None,
@@ -73,6 +77,12 @@ def managed_db(
         verbose=True,
         alembic_ini_path=tmp_path / "alembic.ini",
     )
+
+    # Drop the database after the test if it was created
+    async with autocommit(psycopg_toolbox_empty_db):
+        await drop_database(
+            psycopg_toolbox_empty_db, db_url.database, ignore_missing=True
+        )
 
 
 async def test_create_database(managed_db: ManagedDatabase) -> None:

@@ -1,6 +1,6 @@
 [project]
 name = "alembic-pilot"
-version = "0.1.1"
+version = "0.1.2"
 description = "A powerful database migration management tool built on top of Alembic, supporting AWS, Azure, Google Cloud, and Heroku PostgreSQL deployments"
 readme = "README.md"
 requires-python = ">=3.11"

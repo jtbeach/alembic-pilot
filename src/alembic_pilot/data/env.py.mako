@@ -1,3 +1,5 @@
+"""Alembic environment file."""
+
 from logging.config import fileConfig
 
 from psycopg.sql import Identifier, SQL
@@ -14,11 +16,11 @@ import ${models_import_module}  # noqa: F401
 from ${db_url_callable_module} import ${db_url_callable_name}
 % endif
 % if declarative_base_module and declarative_base_name:
-# Import the SQLAlchemy declarative base class for autogeneration/introspection
-from ${declarative_base_module} import ${declarative_base_name}
+# Import the SQLAlchemy declarative base class for auto-generation/introspection
+from ${declarative_base_module} import ${declarative_base_name}  # noqa: F401
 % endif
 % if autogenerate_include_object_callable_module and autogenerate_include_object_callable_name:
-# Import an include_object callable so that we can filter objects for autogeneration
+# Import an include_object callable so that we can filter objects for auto-generation
 from ${autogenerate_include_object_callable_module} import ${autogenerate_include_object_callable_name}
 % endif
 
@@ -36,7 +38,7 @@ if not skip_logging_init and config.config_file_name is not None:
 
 # add your model's MetaData object here
 % if declarative_base_module:
-target_metadata = ${declarative_base_module}.metadata
+target_metadata = ${declarative_base_name}.metadata
 % else:
 target_metadata = None
 % endif
