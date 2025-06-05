@@ -1,9 +1,9 @@
 [project]
 name = "alembic-pilot"
-version = "0.1.2"
+version = "0.1.3"
 description = "A powerful database migration management tool built on top of Alembic, supporting AWS, Azure, Google Cloud, and Heroku PostgreSQL deployments"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
     { name = "Joel Beach", email = "12853460+jtbeach@users.noreply.github.com" }
@@ -11,7 +11,7 @@ authors = [
 dependencies = [
     "alembic>=1.15.2",
     "psycopg>=3.2.9",
-    "psycopg-toolbox>=0.1.2",
+    "psycopg-toolbox>=0.1.3",
     "sqlalchemy[asyncio,postgresql-psycopg]>=2.0.41",
 ]
 classifiers = [
@@ -19,7 +19,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Database",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -59,7 +59,7 @@ disable_warnings = ["no-data-collected", "module-not-measured", "couldnt-parse"]
 
 [tool.mypy]
 plugins = []
-python_version = "3.11"
+python_version = "3.12"
 warn_redundant_casts = true
 warn_unused_ignores = true
 check_untyped_defs = true

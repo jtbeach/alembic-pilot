@@ -11,7 +11,7 @@ import warnings
 from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
-from typing import Any, TypeAlias
+from typing import Any
 
 import alembic.config
 from alembic.autogenerate import compare_metadata
@@ -29,8 +29,8 @@ from .import_utils import (
 )
 
 # Type definitions for callables
-DbUrlCallable: TypeAlias = Callable[[], URL]
-IncludeObjectCallable: TypeAlias = Callable[
+type DbUrlCallable = Callable[[], URL]
+type IncludeObjectCallable = Callable[
     [SchemaItem, str | None, str | None, bool, SchemaItem | None], bool
 ]
 

@@ -80,6 +80,7 @@ async def managed_db(
 
     # Drop the database after the test if it was created
     async with autocommit(psycopg_toolbox_empty_db):
+        assert db_url.database is not None
         await drop_database(
             psycopg_toolbox_empty_db, db_url.database, ignore_missing=True
         )

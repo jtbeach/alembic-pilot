@@ -8,7 +8,6 @@ import logging
 from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
-from typing import TypeAlias
 
 from psycopg import AsyncConnection
 from psycopg.rows import TupleRow
@@ -40,8 +39,8 @@ from .sanity_checks import (
 )
 
 # Type definitions for callables
-DbUrlCallable: TypeAlias = Callable[[], URL]
-IncludeObjectCallable: TypeAlias = Callable[
+type DbUrlCallable = Callable[[], URL]
+type IncludeObjectCallable = Callable[
     [SchemaItem, str | None, str | None, bool, SchemaItem | None], bool
 ]
 
