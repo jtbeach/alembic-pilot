@@ -71,14 +71,17 @@ all = ["lint", "test"]
 bandit_check = "bandit -c pyproject.toml -r src/alembic_pilot"
 _format = "ruff format"
 debug_test = "pytest -vv --pdb --capture=no"
-fix = "ruff check --fix"
+_fix_lint = "ruff check --fix"
+fix = ["_fix_lint", "sort_imports", "format"]
 format = ["sort_imports", "_format"]
 format_check = "ruff format --check"
 lint_check = "ruff check"
-lint = ["format_check", "lint_check", "type_check", "bandit_check"]
+lint = ["sort_imports_check", "format_check", "lint_check", "type_check", "bandit_check"]
+sort_imports_check = "ruff check --select I"
 sort_imports = "ruff check --select I --fix"
 test = "pytest"
 type_check = "mypy --show-error-codes -p alembic_pilot -p tests"
+
 
 [tool.pytest.ini_options]
 addopts = "-vv -n auto --cov=alembic_pilot --cov-report=term-missing"
